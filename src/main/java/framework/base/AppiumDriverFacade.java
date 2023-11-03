@@ -1,5 +1,10 @@
 package framework.base;
 
+import com.google.common.base.Function;
+import framework.base.Utils.MovementsH;
+import framework.base.Utils.MovementsV;
+import framework.report.Log;
+import framework.test.TestUtils;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
@@ -10,21 +15,14 @@ import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.TapOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
-
 import org.apache.commons.io.FileUtils;
 import org.elasticsearch.common.collect.Tuple;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.FluentWait;
-
-import com.google.common.base.Function;
-
-import framework.base.Utils.MovementsH;
-import framework.base.Utils.MovementsV;
-import framework.report.Log;
-import framework.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -437,7 +430,7 @@ public class AppiumDriverFacade {
 		if (isAndroidExecution()) {
 			Utils.waitForElementVisibility(element, locator, timeOut);
 		} else {
-			Utils.waitForElementAttributeToBePresent(appiumDriver.get(), element, locator, "visible", "true", timeOut);
+			Utils.waitForElementAttributeToBePresent(element, locator, "visible", "true", timeOut);
 		}
 	}
 
@@ -988,7 +981,7 @@ public class AppiumDriverFacade {
 				if (isAndroidExecution()) {
 					return Utils.findElement(container, locator, timeOut, true);
 				} else {
-					Utils.waitForElementAttributeToBePresent(appiumDriver.get(), container, locator, "visible", "true", timeOut);
+					Utils.waitForElementAttributeToBePresent(container, locator, "visible", "true", timeOut);
 					return container.findElement(locator);
 				}
 			}

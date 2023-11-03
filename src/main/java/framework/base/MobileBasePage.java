@@ -1,14 +1,11 @@
 package framework.base;
 
 import framework.report.Log;
-import framework.test.ExecutionRecovery;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.PageFactory;
-import org.testng.Assert;
-import org.testng.Reporter;
 
 import static framework.base.AppiumDriverFacade.appiumDriver;
 
@@ -118,10 +115,10 @@ public abstract class MobileBasePage {
      * @throws InstantiationException the instantiation exception
      * @throws IllegalAccessException the illegal access exception
      */
-    public <T extends MobileBasePage> T tapOnAndroidBackButton(Class<T> returnPage) throws InstantiationException, IllegalAccessException{
+	public <T extends MobileBasePage> T tapOnAndroidBackButton(Class<T> returnPage) throws ReflectiveOperationException {
         AppiumDriverFacade.tapAndroidBackButton();
         Log.testStep("Hago tap en Android Back Button");
-        return returnPage.newInstance();
+		return returnPage.getDeclaredConstructor().newInstance();
     }
     
     /**
@@ -130,14 +127,8 @@ public abstract class MobileBasePage {
     private void removeFullScreenAndroid(){
     	By locatorOK = By.id("android:id/ok");
     	if(AppiumDriverFacade.isElementPresent(locatorOK, 15)){
-    		AppiumDriverFacade.findElement(locatorOK).click();
+			framework.base.AppiumDriverFacade.findElement(locatorOK).click();
     	}
-    	else if(AppiumDriverFacade.isElementPresent(By.id("android:id/immersive_cling_port_step_one"), 5)){
-    		 ExecutionRecovery x = (ExecutionRecovery) (Reporter.getCurrentTestResult().getMethod().getRetryAnalyzer());
-             x.setRetryMode(true);
-             Assert.fail("Sending retry since still is pending the workaround to remove this 'full screen'");
-    	}
-
     }
 
     /**

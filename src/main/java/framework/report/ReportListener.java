@@ -1,39 +1,29 @@
 package framework.report;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.pdf.PdfWriter;
-import framework.base.PerformanceUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 import framework.base.FrameworkProperties;
+import framework.base.PerformanceUtils;
 import framework.test.ExecutionRecovery;
 import framework.test.TestBase;
 import framework.test.TestUtils;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.testng.*;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The listener interface for receiving report events.
@@ -76,7 +66,7 @@ public class ReportListener implements ITestListener, ISuiteListener{
 	@Override
 	public synchronized void onStart(ITestContext context) {
 		boolean createTestRecord = false;
-		Optional<ITestNGMethod> methodFound = Arrays.asList(context.getAllTestMethods()).stream()
+        Optional<ITestNGMethod> methodFound = Arrays.stream(context.getAllTestMethods())
 				.filter(method ->  method.getInstance().toString()
 						.contains(context.getName().contains("_") ? context.getName().split("_")[0] : context.getName()))
 				.findFirst();
@@ -92,12 +82,12 @@ public class ReportListener implements ITestListener, ISuiteListener{
 		else {
 	
 		if (context.getIncludedGroups().length != 0) {
-			createTestRecord = Arrays.asList(context.getIncludedGroups()).stream()
-					.anyMatch(includedGroup -> groupsOnTest.contains(includedGroup));
+            createTestRecord = Arrays.stream(context.getIncludedGroups())
+                    .anyMatch(groupsOnTest::contains);
 		}
 		if (context.getExcludedGroups().length != 0) {
-			createTestRecord = !Arrays.asList(context.getExcludedGroups()).stream()
-					.anyMatch(excludedGroup -> groupsOnTest.contains(excludedGroup));
+            createTestRecord = Arrays.stream(context.getExcludedGroups())
+                    .noneMatch(groupsOnTest::contains);
 		}
 		}
 		if (createTestRecord) {
@@ -152,7 +142,7 @@ public class ReportListener implements ITestListener, ISuiteListener{
 	 */
 	@Override
 	public synchronized void onTestSkipped(ITestResult result) {
-		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer());
+		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer(result));
 		if (recovery.retryWasCalled() && recovery.getRetryCount() > 0) {
 			extent.removeTest(TestBase.getReport());
 		}
@@ -167,8 +157,8 @@ public class ReportListener implements ITestListener, ISuiteListener{
 	 * @param suite the suite
 	 */
 	public void countTests(ISuite suite)  {
-		Set<String> all = new HashSet<String>();
-		suite.getAllMethods().stream().forEach(x -> 
+        Set<String> all = new HashSet<>();
+        suite.getAllMethods().forEach(x ->
 		{ 
 		  String test = x.getConstructorOrMethod().getMethod().getAnnotation(Test.class).testName();
 		  List<String> groups = Arrays.asList(x.getConstructorOrMethod().getMethod().getAnnotation(Test.class).groups());
@@ -176,10 +166,9 @@ public class ReportListener implements ITestListener, ISuiteListener{
 		  boolean isIOS = groups.stream().anyMatch(g -> g.equalsIgnoreCase("iOS"));
 		  Pattern patt = Pattern.compile("(((TC|AND|IOS)\\d{3,10})(_{1}))+");
 		  Matcher matcher = patt.matcher(test);
-		  matcher.lookingAt();
 		  if(matcher.lookingAt()) {
 			  List<String> allIds = Arrays.asList(matcher.group().split("_"));
-			allIds.stream().forEach(id -> {
+              allIds.forEach(id -> {
 				if (all.add(id.replace("AND", "TC").replace("IOS", "TC"))) {
 					if (id.contains("AND")) {
 						androidCount++;
@@ -235,18 +224,14 @@ public class ReportListener implements ITestListener, ISuiteListener{
 	 */
 	@Override
 	public void onFinish(ISuite suite) {
-		String results = "";
+        StringBuilder results = new StringBuilder();
 		
 		try {
 			File dir = new File(".");
-			File[] files = dir.listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					return name.endsWith(".log");
-				}
-			});
-			for (File file : files) {
-				results += TestUtils.readFile(file, true);
+            File[] files = dir.listFiles((dir1, name) -> name.endsWith(".log"));
+            assert files != null;
+            for (File file : files) {
+                results.append(TestUtils.readFile(file, true));
 				file.deleteOnExit();
 			}
 			if(FrameworkProperties.getConfluenceReport().equalsIgnoreCase("true"))this.setConfluenceResume(suite);
@@ -257,7 +242,7 @@ public class ReportListener implements ITestListener, ISuiteListener{
 		}
         if(PerformanceUtils.getTimeAverageInSeconds() != 0.0)
             extent.setSystemInfo("T.P. Inicio APP", String.valueOf(PerformanceUtils.getTimeAverageInSeconds()).replace(".", ",") + " Segundos");
-        extent.setTestRunnerOutput(results);
+        extent.setTestRunnerOutput(results.toString());
 		extent.flush();
 		this.modifyHtmlImageNames();
 		if(FrameworkProperties.getRallyLogResults().equalsIgnoreCase("True")) {
@@ -391,17 +376,18 @@ public class ReportListener implements ITestListener, ISuiteListener{
                 + "<li style='margin-left: 3em'><b> Numero de pruebas Fallidas: </b>" + numFailed + "</li>"
                 + "<li style='margin-left: 3em'><b> Numero de Pruebas Omitidas: </b>" + numSkipped + "</li></ul>";
 
-		RestAssured.baseURI = "https://project-barcelona.net/rest/api/content";
-		Response res = RestAssured.given().auth().preemptive().basic("guillermomartin.corbella@altran.com", "dsatrQ%&%")
+		RestAssured.baseURI = "confluence_url_here";
+		Response res = RestAssured.given().auth().preemptive().basic("xxxxxxxxx", "xxxxxxx")
 				.queryParam("spaceKey", docSpace).queryParam("title", docTitle).queryParam("expand", "version")
 				.get();
 		String version = res.jsonPath().getString("results.version.number").replace("[","").replace("]", "");
 		String id = res.jsonPath().getString("results.id").replace("[","").replace("]", "");
-		RestAssured.baseURI = "https://project-barcelona.net/rest/api/content/"+ String.valueOf(id);
-		RestAssured.given().auth().preemptive().basic("guillermomartin.corbella@altran.com", "dsatrQ%&%").contentType("application/json").body("{" + 
-				"    \"version\": {" + 
-				"        \"number\": "+ (Integer.valueOf(version) + 1) +"" + 
-				"    }," + 
+        RestAssured.baseURI = "https://project-barcelona.net/rest/api/content/" + id;
+		RestAssured.given().auth().preemptive().basic("xxxxxxxxxxxx", "xxxxxxxx").contentType("application/json")
+				.body("{" +
+                        "    \"version\": {" +
+                        "        \"number\": " + (Integer.parseInt(version) + 1) +
+                        "    }," +
 				"    \"title\": \""+ docTitle +"\"," + 
 				"    \"type\": \"page\"," + 
 				"    \"body\": {" + 

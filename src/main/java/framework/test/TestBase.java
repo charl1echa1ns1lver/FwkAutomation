@@ -5,17 +5,11 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.MediaEntityModelProvider;
 import com.aventstack.extentreports.Status;
-
-import framework.base.AppiumDriverFacade;
-import framework.base.FrameworkProperties;
-import framework.base.PerformanceUtils;
-import framework.base.WebDriverFacade;
-import framework.base.WebDriverUtils;
+import framework.base.*;
 import framework.report.Log;
 import groovy.lang.Tuple2;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
@@ -23,22 +17,18 @@ import org.openqa.selenium.NoSuchSessionException;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.SkipException;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
-
 
 import static framework.base.AppiumDriverFacade.appiumDriver;
 
@@ -55,30 +45,24 @@ public abstract class TestBase {
 	/** The eyes. */
 	private Eyes eyes;
 
-	/** The time start. */
-	public static long time_start;
-
-	/** The time end. */
-	public static long time_end;
-
 	/** The report. */
-	public static ThreadLocal<ExtentTest> report = new ThreadLocal<ExtentTest>();
+	public static ThreadLocal<ExtentTest> report = new ThreadLocal<>();
 
 	/** The Constant screenshots. */
 	private static final String screenshots = new File(System.getProperty("user.dir")).getAbsolutePath()
 			+ File.separator + "screenshots" + File.separator;
 	
 	/** The device and platform. */
-	private ThreadLocal<Tuple2<String, String>> deviceAndPlatform = new ThreadLocal<Tuple2<String, String>>();
+	private final ThreadLocal<Tuple2<String, String>> deviceAndPlatform = new ThreadLocal<>();
 	
 	/** The test name. */
 	private ThreadLocal<String> testName;
 	
 	/** The screenshot. */
-	private ThreadLocal<MediaEntityModelProvider> screenshot = new ThreadLocal<MediaEntityModelProvider>();
+	private final ThreadLocal<MediaEntityModelProvider> screenshot = new ThreadLocal<>();
 
 	/** The screenshot size. */
-	private ThreadLocal<Integer> screenshotSize = new ThreadLocal<Integer>();
+	private final ThreadLocal<Integer> screenshotSize = new ThreadLocal<>();
 
 	/**
 	 * Sets the report.
@@ -149,20 +133,20 @@ public abstract class TestBase {
 	 * @param result  the result
 	 * @param context the new up appium
 	 * @param method the method
-	 * @throws URISyntaxException 
+	 * @throws URISyntaxException URI Syntax Exception
 	 */
 	@BeforeMethod(alwaysRun = true)
 	public void setUpTest(ITestResult result, ITestContext context, Method method) throws URISyntaxException {
 		try {
 			if (context.getAttribute("onRetry") == null) {
-				testName = new ThreadLocal<String>();
+				testName = new ThreadLocal<>();
 				testName.set(context.getName());
 				Log.logger = LogManager.getLogger(getClass());
-				ThreadContext.put("threadName", context.getName().substring(0, Math.round(context.getName().length() / 2)).replace("'", "").replace(":", "_").replaceAll("\\s+",""));
+				ThreadContext.put("threadName", context.getName().substring(0, Math.round(((float) context.getName().length() / 2))).replace("'", "").replace(":", "_").replaceAll("\\s+", ""));
 				context.getCurrentXmlTest().getName();
 			}
 			Log.testStart(context.getName());
-			if(Arrays.asList(method.getAnnotation(Test.class).groups()).stream().anyMatch(gr -> gr.equals("SMS"))) {
+			if (Arrays.asList(method.getAnnotation(Test.class).groups()).contains("SMS")) {
 				System.setProperty("APP", "SMS");
 			}
 			Log.testDescription(method.getAnnotation(Test.class).description());
@@ -175,10 +159,9 @@ public abstract class TestBase {
 			else {
 				String isMobile = context.getCurrentXmlTest().getParameter("mobile");
 				boolean isHybrid = FrameworkProperties.getWeb().equalsIgnoreCase("True") && isMobile != null && isMobile.equalsIgnoreCase("True");
-				if(FrameworkProperties.getWeb().equalsIgnoreCase("True") && isHybrid == false) {
+				if (FrameworkProperties.getWeb().equalsIgnoreCase("True") && !isHybrid) {
 					WebDriverFacade.createDriver();
-				}
-				else if (context.getAttribute("onRetry") != null || firstRun == true || FrameworkProperties.getDeviceName().equalsIgnoreCase("Dynamic")
+				} else if (context.getAttribute("onRetry") != null || firstRun || FrameworkProperties.getDeviceName().equalsIgnoreCase("Dynamic")
 						|| this.getThreadCount(context) != 1) {
 					AppiumDriverFacade.createDriver(isHybrid, testName.get(),
 							FrameworkProperties.getDeviceName(), FrameworkProperties.getPlatformVersion());
@@ -190,7 +173,7 @@ public abstract class TestBase {
 			}
 			firstRun = false;
 			if (FrameworkProperties.getLocal().equalsIgnoreCase("False")) {
-				URL sauceURL = new URL(appiumDriver.get().getCapabilities().getCapability("testobject_test_report_url").toString());
+				URL sauceURL = URI.create(appiumDriver.get().getCapabilities().getCapability("testobject_test_report_url").toString()).toURL();
 				deviceAndPlatform.set(TestUtils.getDevicePlatformNameAndVersion());
 				getReport().getModel().setName(context.getName() + "<br>" + "<b>Device:</b> '" +
 						deviceAndPlatform.get().getFirst() + "' - <b>Platform:</b> '" +
@@ -215,7 +198,7 @@ public abstract class TestBase {
 	 * @param e the exception
 	 */
 	private <T extends Exception> void skipTest(ITestResult result, String errorMessage, T e) {
-		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer());
+		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer(result));
 		String error = errorMessage + ((e != null && e.getMessage() != null) ? " -> " + e.getMessage()  : "");
 		getReport().skip(error);
 		Log.logger.debug("Test Skipped " + result.getMethod().getMethodName() + "-> " + error);
@@ -258,8 +241,7 @@ public abstract class TestBase {
 	 * Log and take screenshot
 	 *
 	 * @author carlos.cadena
-	 * @param result  the result
-	 * @param context the context
+	 * @param screenshotTitle  the screenshot title
 	 */
 	public void logAndTakeScreenshotForTest(String screenshotTitle) {
 		try {
@@ -326,7 +308,7 @@ public abstract class TestBase {
 	
 
 	/**
-	 * The After method which is the responsible of closing operations after each
+	 * The After method which is the responsible for closing operations after each
 	 * test execution.
 	 *
 	 * @author carlos.cadena
@@ -336,7 +318,7 @@ public abstract class TestBase {
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void closeApp(ITestResult result, ITestContext context, Method method) {
-		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer());
+		ExecutionRecovery recovery = (ExecutionRecovery) (result.getMethod().getRetryAnalyzer(result));
 		if (result.getStatus() == ITestResult.SKIP && recovery.retryWasCalled() && recovery.isExhausted()) {
 			Log.logger.debug("Skipping test ->" + context.getName() + "-> test status :" + result.getStatus());
 			TestBase.getReport().skip("Retries were exhausted and test was not executed, please re run");
@@ -382,16 +364,17 @@ public abstract class TestBase {
 	 * @param result the result
 	 */
 	private void logTestPassedFailedOnSauce(boolean result) {
+		String bodySauceResult = "{\"passed\":" + (result ? Boolean.toString(true) : Boolean.toString(false)) + "}";
 		if (appiumDriver.get().getCapabilities().getCapability("testobject_api_key") != null) {
 			RestAssured.baseURI = "https://app.testobject.com/api/rest/v2/appium/session/"
 					+ appiumDriver.get().getSessionId() + "/test";
-			RestAssured.given().body("{\"passed\":" + (result ? Boolean.toString(true) : Boolean.toString(false)) + "}")
+			RestAssured.given().body(bodySauceResult)
 					.contentType(ContentType.JSON).put();
 		} else {
-			RestAssured.baseURI = "https://saucelabs.com/rest/v1/guillermomartin/jobs/"
+			RestAssured.baseURI = "https://saucelabs.com/rest/v1/xxxxxx/jobs/"
 					+ appiumDriver.get().getSessionId();
-			RestAssured.given().auth().basic("guillermomartin", "023e7076-3977-4c07-93c9-7630d90de9ec")
-					.body("{\"passed\":" + (result ? Boolean.toString(true) : Boolean.toString(false)) + "}")
+			RestAssured.given().auth().basic("xxxxxxx", "023e7076-3977-4c07-93c9-7630d90de9ec")
+					.body(bodySauceResult)
 					.contentType(ContentType.JSON).put();
 		}
 	}
@@ -407,14 +390,13 @@ public abstract class TestBase {
 		if (FrameworkProperties.getLocal().equalsIgnoreCase("true")) {
 			return context.getSuite().getXmlSuite().getThreadCount();
 		}
-		return Integer.valueOf(System.getProperty("threadCount")).intValue();
+		return Integer.parseInt(System.getProperty("threadCount"));
 	}
 
 	/**
 	 * Gets the thread count.
 	 *
 	 * @author carlos.cadena
-	 * @return the thread count
 	 */
 	@AfterSuite(alwaysRun = true)
 	public void endSuite() {
@@ -422,6 +404,7 @@ public abstract class TestBase {
 			if (Files.exists(new File(screenshots).toPath())) {
 				File screenshotFolder = new File(screenshots);
 				File[] files = screenshotFolder.listFiles();
+				assert files != null;
 				for (File f : files) {
 					if (!f.getCanonicalPath().contains("gitignore"))
 						f.deleteOnExit();

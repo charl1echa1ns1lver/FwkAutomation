@@ -1,10 +1,8 @@
 package framework.base;
 
 import com.google.common.base.Function;
-
 import framework.report.Log;
 import framework.test.TestUtils;
-
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -139,7 +137,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForElementVisibility(WebDriver driver, WebElement element, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.visibilityOf(element));
@@ -157,12 +155,7 @@ public class Utils {
 		FluentWait<WebElement> wait = new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class);
-		wait.until(new Function<WebElement,Boolean>() {
-            @Override
-            public Boolean apply(WebElement arg) {
-            	return arg.findElement(locator).isDisplayed();
-            }
-        });
+		wait.until((Function<WebElement, Boolean>) arg -> arg.findElement(locator).isDisplayed());
 	}
 
 	/**
@@ -183,7 +176,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForAllElementsVisibility(WebDriver driver, List<? extends WebElement> elements, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		for (WebElement element : elements) {
@@ -199,7 +192,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForAllElementsVisibility(WebDriver driver, By locator, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
@@ -217,17 +210,14 @@ public class Utils {
 		Wait<WebElement> wait = new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
-		wait.until(new Function<WebElement, Boolean>() {
-			@Override
-			public Boolean apply(WebElement arg) {
-				List<? extends WebElement> elements = arg.findElements(locator);
-				for (WebElement e : elements) {
-					if (!e.isDisplayed()) {
-						return Boolean.FALSE;
-					}
+		wait.until((Function<WebElement, Boolean>) arg -> {
+			List<? extends WebElement> elements = arg.findElements(locator);
+			for (WebElement e : elements) {
+				if (!e.isDisplayed()) {
+					return Boolean.FALSE;
 				}
-				return Boolean.TRUE;
 			}
+			return Boolean.TRUE;
 		});
 	}
 
@@ -253,7 +243,7 @@ public class Utils {
 	public static void waitForElementVisibilityByIndex(WebDriver driver, List<? extends WebElement> elements, int index,
 			int timeOut) {
 		if(elements != null && !elements.isEmpty() && index < elements.size()) {
-			Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 			wait.until(ExpectedConditions.visibilityOf(elements.get(index)));
@@ -283,7 +273,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForElementVisibility(WebDriver driver, By locator, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -301,7 +291,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForElementAttributeToBePresent(WebDriver driver, By locator, String attribute, String value, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.attributeToBe(locator, attribute, value));
@@ -319,7 +309,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static <T extends WebElement> void waitForElementAttributeToBePresent(WebDriver driver, T element, String attribute, String value, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.attributeToBe(element, attribute, value));
@@ -332,26 +322,23 @@ public class Utils {
 	 * Wait for element attribute to be present for an element inside a container.
 	 *
 	 * @param <T> the generic type
-	 * @param driver the driver
 	 * @param container the container
 	 * @param locator the locator
 	 * @param attribute the attribute
 	 * @param value the value
 	 * @param timeOut the time out
 	 */
-	public static <T extends WebElement> void waitForElementAttributeToBePresent(WebDriver driver, T container, By locator, String attribute, String value, int timeOut) {
+	public static <T extends WebElement> void waitForElementAttributeToBePresent(T container, By locator, String attribute, String value, int timeOut) {
 		Wait<WebElement> wait = new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
-		wait.until(new Function<WebElement,Boolean>() {
-            @Override
-            public Boolean apply(WebElement arg) {
-            	String currentValue = arg.getAttribute(attribute);
-                if (currentValue == null || currentValue.isEmpty()) {
-                  currentValue = arg.getCssValue(attribute);
-                }
-                return value.equals(currentValue);
-            }
+		wait.until((Function<WebElement, Boolean>) arg -> {
+			WebElement elementInside = arg.findElement(locator);
+			String currentValue = elementInside.getAttribute(attribute);
+			if (currentValue == null || currentValue.isEmpty()) {
+				currentValue = arg.getCssValue(attribute);
+			}
+			return value.equals(currentValue);
         });
 	}
 	
@@ -369,7 +356,7 @@ public class Utils {
 	 */
 	public static <T extends WebElement> void waitForElementAttributeToBePresentByIndex(WebDriver driver, List<T> elements, int index, String attribute, String value, int timeOut) {
 		if(elements != null && !elements.isEmpty() && index < elements.size()) {
-			Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class);
 			wait.until(ExpectedConditions.attributeToBe(elements.get(index), attribute, value));
@@ -399,7 +386,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForElementEnabled(WebDriver driver, WebElement element, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 				.ignoring(ElementNotSelectableException.class).ignoring(ElementNotVisibleException.class)
 				.ignoring(WebDriverException.class);
@@ -424,7 +411,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForElementPresence(WebDriver driver, By locator, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.presenceOfElementLocated(locator));
 	}
@@ -440,12 +427,7 @@ public class Utils {
 	public static <T extends WebElement> void waitForElementPresence(T container, By locator, int timeOut) {
 		Wait<WebElement> wait = new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class);
-		wait.until(new Function<WebElement,WebElement>() {
-            @Override
-            public WebElement apply(WebElement arg) {
-                return arg.findElement(locator);
-            }
-        });
+		wait.until((Function<WebElement, WebElement>) arg -> arg.findElement(locator));
 	}
 	
 	/**
@@ -456,7 +438,7 @@ public class Utils {
 	 * @param timeOut the time out
 	 */
 	public static void waitForAllElementsPresence(WebDriver driver, By locator, int timeOut) {
-		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+		Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class);
 		wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
 	}
@@ -472,12 +454,7 @@ public class Utils {
 	public static <T extends WebElement> void waitForAllElementsPresence(T container, By locator, int timeOut) {
 		Wait<WebElement> wait = new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 				.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class);
-		wait.until(new Function<WebElement, List<WebElement>>() {
-			@Override
-			public List<WebElement> apply(WebElement arg) {
-				return arg.findElements(locator);
-			}
-		});
+		wait.until((Function<WebElement, List<WebElement>>) arg -> arg.findElements(locator));
 	}
 
 	//endregion
@@ -489,24 +466,16 @@ public class Utils {
 	 * 
 	 * @author carlos.cadena
 	 * @param <T> the generic type
-	 * @param container the container
-	 * @param locator the locator
 	 * @param timeOut the time out
 	 * @return 
 	 * @return true, if is element visible
 	 */
 	public static <T extends WebElement> boolean areElementsVisible(WebDriver driver, List<T> elements, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver driver) {
-							{
-								return elements.stream().allMatch(element -> Utils.isElementVisible(driver, element, timeOut));
-							}
-						}
-					});
+					.until((Function<WebDriver, Boolean>) driver1 -> elements.stream().allMatch(element -> Utils.isElementVisible(driver1, element, timeOut)));
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -528,13 +497,7 @@ public class Utils {
 			return new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebElement, Boolean>() {
-						public Boolean apply(WebElement arg) {
-							{
-								return arg.findElement(locator).isDisplayed();
-							}
-						}
-					});
+					.until((Function<WebElement, Boolean>) arg -> arg.findElement(locator).isDisplayed());
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -557,13 +520,12 @@ public class Utils {
 			return new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebElement, Boolean>() {
-						public Boolean apply(WebElement arg) {
-							try {
-								return !arg.findElement(locator).isDisplayed();
-						}catch( StaleElementReferenceException| ElementNotVisibleException | NoSuchElementException e) {
+					.until((Function<WebElement, Boolean>) arg -> {
+						try {
+							return !arg.findElement(locator).isDisplayed();
+						} catch (StaleElementReferenceException | ElementNotVisibleException |
+								 NoSuchElementException e) {
 							return true;
-						}
 						}
 					});
 		} catch (TimeoutException e) {
@@ -583,16 +545,10 @@ public class Utils {
 	 */
 	public static boolean isElementVisible(WebDriver driver, WebElement element, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							{
-								return element.isDisplayed();
-							}
-						}
-					});
+					.until((Function<WebDriver, Boolean>) arg -> element.isDisplayed());
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -609,15 +565,14 @@ public class Utils {
 	 */
 	public static boolean isElementNotVisible(WebDriver driver, WebElement element, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut)).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							{
-								try {
-									return !element.isDisplayed();
-								}catch( StaleElementReferenceException| ElementNotVisibleException | NoSuchElementException e) {
-									return true;
-								}
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut)).ignoring(WebDriverException.class)
+					.until((Function<WebDriver, Boolean>) arg -> {
+						{
+							try {
+								return !element.isDisplayed();
+							} catch (StaleElementReferenceException | ElementNotVisibleException |
+									 NoSuchElementException e) {
+								return true;
 							}
 						}
 					});
@@ -638,18 +593,15 @@ public class Utils {
 	 */
 	public static boolean isElementVisible(WebDriver driver, List<? extends WebElement> elements, int index, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							if(elements != null && !elements.isEmpty() && index < elements.size()) {
-								return elements.get(index).isDisplayed();
-							}
-							else {
-								Log.logger.debug("List of elements is null, empty or does not have an element on index '" + index + "'");
-								return false;
-							}
+					.until((Function<WebDriver, Boolean>) arg -> {
+						if (elements != null && !elements.isEmpty() && index < elements.size()) {
+							return elements.get(index).isDisplayed();
+						} else {
+							Log.logger.debug("List of elements is null, empty or does not have an element on index '" + index + "'");
+							return false;
 						}
 					});
 		} catch (TimeoutException e) {
@@ -667,15 +619,11 @@ public class Utils {
 	 */
 	public static boolean isElementEnabled(WebDriver driver, WebElement element, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(ElementNotInteractableException.class)
 					.ignoring(ElementNotSelectableException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							return element.isEnabled();
-						}
-					});
+					.until((Function<WebDriver, Boolean>) arg -> element.isEnabled());
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -693,19 +641,16 @@ public class Utils {
 	 */
 	public static boolean isElementEnabled(WebDriver driver, List<? extends WebElement> elements, int index, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(ElementNotSelectableException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							if(elements != null && !elements.isEmpty() && index < elements.size()) {
-								return elements.get(index).isEnabled();
-							}
-							else {
-								Log.logger.debug("List of elements is null, empty or does not have an element on index '" + index +"'");
-								return false;
-							}
+					.until((Function<WebDriver, Boolean>) arg -> {
+						if (elements != null && !elements.isEmpty() && index < elements.size()) {
+							return elements.get(index).isEnabled();
+						} else {
+							Log.logger.debug("List of elements is null, empty or does not have an element on index '" + index + "'");
+							return false;
 						}
 					});
 		} catch (TimeoutException e) {
@@ -724,17 +669,15 @@ public class Utils {
 	 */
 	public static boolean isElementVisible(WebDriver driver, By locator, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return element.isDisplayed();
-							}
-							return false;
+					.until((Function<WebDriver, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return element.isDisplayed();
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -752,14 +695,13 @@ public class Utils {
 	 */
 	public static boolean isElementNotVisible(WebDriver driver, By locator, int timeOut) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOut)).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							try {
-								return !arg.findElement(locator).isDisplayed();
-						}catch( StaleElementReferenceException| ElementNotVisibleException | NoSuchElementException e) {
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeOut)).ignoring(WebDriverException.class)
+					.until((Function<WebDriver, Boolean>) arg -> {
+						try {
+							return !arg.findElement(locator).isDisplayed();
+						} catch (StaleElementReferenceException | ElementNotVisibleException |
+								 NoSuchElementException e) {
 							return true;
-						}
 						}
 					});
 		} catch (TimeoutException e) {
@@ -782,17 +724,15 @@ public class Utils {
 	 */
 	public static boolean isElementEnabled(WebDriver driver, By locator, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(ElementNotSelectableException.class)
-					.ignoring(ElementNotVisibleException.class).until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return element.isEnabled();
-							}
-							return false;
+					.ignoring(ElementNotVisibleException.class).until((Function<WebDriver, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return element.isEnabled();
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -804,23 +744,20 @@ public class Utils {
 	 * Checks for a presence of an element inside a container explicitly
 	 *
 	 * @author carlos.cadena
-	 * @param driver the driver
 	 * @param locator the locator
 	 * @param timeout the timeout
 	 * @return true if element is present or false otherwise
 	 */
 	public static boolean isElementPresent(WebElement container, By locator, int timeout) {
 		try {
-			return new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(container).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
-					.ignoring(WebDriverException.class).until(new Function<WebElement, Boolean>() {
-						public Boolean apply(WebElement arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return true;
-							}
-							return false;
+					.ignoring(WebDriverException.class).until((Function<WebElement, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return true;
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -838,16 +775,14 @@ public class Utils {
 	 */
 	public static boolean isElementPresent(WebDriver driver, By locator, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
-					.ignoring(WebDriverException.class).until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return true;
-							}
-							return false;
+					.ignoring(WebDriverException.class).until((Function<WebDriver, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return true;
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -869,17 +804,15 @@ public class Utils {
 	 */
 	public static boolean isAttributePresentOnElement(WebDriver driver, By locator, String attribute, String value, boolean contains, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
-							}
-							return false;
+					.until((Function<WebDriver, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -901,18 +834,16 @@ public class Utils {
 	 * @return true if element is present or false otherwise
 	 */
 	public static boolean isAttributePresentOnElement(WebElement container, By locator, String attribute, String value, boolean contains, int timeout) {
-		try {			
-			return new FluentWait<WebElement>(container).withTimeout(Duration.ofSeconds(timeout))
+		try {
+			return new FluentWait<>(container).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(ElementNotVisibleException.class)
 					.ignoring(StaleElementReferenceException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebElement, Boolean>() {
-						public Boolean apply(WebElement arg) {
-							WebElement element = arg.findElement(locator);
-							if (element != null) {
-								return (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
-							}
-							return false;
+					.until((Function<WebElement, Boolean>) arg -> {
+						WebElement element = arg.findElement(locator);
+						if (element != null) {
+							return (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
 						}
+						return false;
 					});
 		} catch (TimeoutException e) {
 			return false;
@@ -934,14 +865,10 @@ public class Utils {
 	 */
 	public static boolean isAttributePresentOnElement(WebDriver driver, WebElement element, String attribute, String value, boolean contains, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-								return (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
-						}
-					});
+					.until((Function<WebDriver, Boolean>) arg -> (contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value)));
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -963,14 +890,10 @@ public class Utils {
 	 */
 	public static <T extends WebElement> boolean isAttributePresentOnAllElements(WebDriver driver, List<T> elements, String attribute, String value, boolean contains, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							return elements.stream().allMatch(element ->  contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value));
-						}
-					});
+					.until((Function<WebDriver, Boolean>) arg -> elements.stream().allMatch(element -> contains ? element.getAttribute(attribute).contains(value) : element.getAttribute(attribute).equals(value)));
 		} catch (TimeoutException e) {
 			return false;
 		}
@@ -993,14 +916,12 @@ public class Utils {
 	 */
 	public static <T extends WebElement> boolean isAttributePresentOnElementByIndex(WebDriver driver, List<T> elements,  int index, String attribute, String value, boolean contains, int timeout) {
 		try {
-			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
+			return new FluentWait<>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(NoSuchElementException.class).ignoring(StaleElementReferenceException.class)
 					.ignoring(ElementNotVisibleException.class).ignoring(WebDriverException.class)
-					.until(new Function<WebDriver, Boolean>() {
-						public Boolean apply(WebDriver arg) {
-							TestUtils.assertListSize(elements, index);
-							return contains ? elements.get(index).getAttribute(attribute).contains(value) : elements.get(index).getAttribute(attribute).equals(value);
-						}
+					.until((Function<WebDriver, Boolean>) arg -> {
+						TestUtils.assertListSize(elements, index);
+						return contains ? elements.get(index).getAttribute(attribute).contains(value) : elements.get(index).getAttribute(attribute).equals(value);
 					});
 		} catch (TimeoutException e) {
 			return false;

@@ -1,35 +1,25 @@
 package framework.test;
 
-import static framework.base.AppiumDriverFacade.appiumDriver;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.testng.SkipException;
-
 import framework.base.FrameworkProperties;
 import groovy.lang.Tuple2;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.testng.SkipException;
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static framework.base.AppiumDriverFacade.appiumDriver;
 
 /**
  * A TestUtils class with the common functionalities.
@@ -39,7 +29,7 @@ import io.restassured.response.Response;
 public class TestUtils {
 	
 	public enum Browser{
-		FIREFOX,SAFARI,OPERA,CHROME,IE,EDGE,NONE;
+        FIREFOX, CHROME, EDGE
 	}
 	
 
@@ -53,21 +43,21 @@ public class TestUtils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static String readFile(File file, boolean addSeparator) throws IOException {
-		String text = "";
-		CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+		StringBuilder text = new StringBuilder();
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
 		decoder.onMalformedInput(CodingErrorAction.IGNORE);
 		FileInputStream input = new FileInputStream(file);
 		InputStreamReader reader = new InputStreamReader(input, decoder);
 		BufferedReader bufferedreader = new BufferedReader(reader);
-		String line = null;
+		String line;
 		while ((line = bufferedreader.readLine()) != null) {
-			text += line;
+			text.append(line);
 			if (addSeparator) {
-				text += System.getProperty("line.separator") + "<br>";
+				text.append(System.getProperty("line.separator")).append("<br>");
 			}
 		}
 		bufferedreader.close();
-		return text;
+		return text.toString();
 	}
 	
 	  /**
@@ -144,9 +134,9 @@ public class TestUtils {
 			if(device == null) {
 				device = response.getBody().jsonPath().getString("US.find { it.id == '" + deviceNameSearch + "' }.name");
 			}
-			device.replace("HUAWEI", "Huawei").replace("bq", "BQ");
+            device = device.replace("HUAWEI", "Huawei").replace("bq", "BQ");
 		}
-		return new Tuple2<String, String>(device, platformAndVersion);
+		return new Tuple2<>(device, platformAndVersion);
 	}
 	
 	/**
@@ -210,7 +200,7 @@ public class TestUtils {
 	 * @return the map
 	 */
 	public static Map<String,LocalDate> daysOfWeekWithDate(){
-		 Map<String,LocalDate> dayAndDate = new HashMap<String,LocalDate>();
+        Map<String, LocalDate> dayAndDate = new HashMap<>();
  		for(int i = 0; i < 8; i++) {
  			if(i == 0) {
  			dayAndDate.put("Hoy", LocalDate.now());
@@ -219,7 +209,7 @@ public class TestUtils {
  			dayAndDate.put("Ayer", LocalDate.now().minusDays(1));
  			}
  			else {
- 				dayAndDate.put(toTitle(LocalDate.now().minusDays(i).getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es","ES"))), LocalDate.now().minusDays(i));
+                dayAndDate.put(toTitle(LocalDate.now().minusDays(i).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("es", "ES"))), LocalDate.now().minusDays(i));
  		    }
  		}
  		return dayAndDate;
