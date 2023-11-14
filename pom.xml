@@ -7,13 +7,13 @@
 	<groupId>com.charliechain</groupId>
 	<artifactId>fwkAutomation</artifactId>
 	<version>1.0</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jackson.version>2.12.7.1</jackson.version>
 		<testng.version>7.7.0</testng.version>
-		<appium.version>7.0.0</appium.version>
+		<appium.version>9.0.0</appium.version>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
@@ -23,6 +23,12 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -48,6 +54,16 @@
 			<groupId>com.aventstack</groupId>
 			<artifactId>extentreports</artifactId>
 			<version>3.1.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.freemarker</groupId>
+					<artifactId>freemarker</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.lmax</groupId>
@@ -72,7 +88,7 @@
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itextpdf</artifactId>
-			<version>5.0.6</version>
+			<version>5.5.13.3</version>
 		</dependency>
 		<dependency>
 			<groupId>io.appium</groupId>
@@ -81,8 +97,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.applitools</groupId>
-			<artifactId>eyes-selenium-java3</artifactId>
-			<version>3.37.1</version>
+			<artifactId>eyes-selenium-java4</artifactId>
+			<version>4.14.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.seleniumhq.selenium</groupId>
@@ -100,17 +116,25 @@
 					<groupId>io.appium</groupId>
 					<artifactId>java-client</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jersey.core</groupId>
+					<artifactId>jersey-common</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.dongliu</groupId>
 			<artifactId>apk-parser</artifactId>
-			<version>2.6.0</version>
+			<version>2.6.10</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-			<version>2.2.2</version>
+			<version>5.6.1</version>
 		</dependency>
 	</dependencies>
 

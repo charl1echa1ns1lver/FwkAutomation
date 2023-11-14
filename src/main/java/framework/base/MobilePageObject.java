@@ -1,23 +1,23 @@
 package framework.base;
 
 import framework.report.Log;
-import org.openqa.selenium.By;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
+import io.appium.java_client.WebElement;
+import org.openqa.selenium.By;
 
 /**
  * The Class MobilePageObject, that allows to model a section of a Mobile screen
  *
  * @author carlos.cadena
  */
-public class MobilePageObject extends PageObject<AppiumDriver<MobileElement>, MobileElement> {
+public class MobilePageObject extends PageObject<AppiumDriver<WebElement>, WebElement> {
 
 	/**
 	 * Instantiates a new mobile page object.
 	 * @author carlos.cadena
 	 * @param container the container
 	 */
-	public MobilePageObject(MobileElement container) {
+	public MobilePageObject(WebElement container) {
 		super(container);
 		// TODO Auto-generated constructor stub
 	}

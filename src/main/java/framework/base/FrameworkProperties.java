@@ -593,5 +593,11 @@ public class FrameworkProperties {
 		}
 		return System.getProperty("PHONE_ONLY");
 	}
-	
+
+	public static String getAppActivity() {
+		if (System.getProperty("APP_ACTIVITY") == null) {
+			return props.getProperty("app.activity");
+		}
+		return System.getProperty("APP_ACTIVITY");
+	}
 }

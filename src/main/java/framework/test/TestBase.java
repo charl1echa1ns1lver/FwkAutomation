@@ -8,6 +8,8 @@ import com.aventstack.extentreports.Status;
 import framework.base.*;
 import framework.report.Log;
 import groovy.lang.Tuple2;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -31,6 +33,7 @@ import java.util.Arrays;
 import java.util.Base64;
 
 import static framework.base.AppiumDriverFacade.appiumDriver;
+import static framework.base.AppiumDriverFacade.isAndroidExecution;
 
 /**
  * The Class TestBase.
@@ -136,7 +139,7 @@ public abstract class TestBase {
 	 * @throws URISyntaxException URI Syntax Exception
 	 */
 	@BeforeMethod(alwaysRun = true)
-	public void setUpTest(ITestResult result, ITestContext context, Method method) throws URISyntaxException {
+    public void setUpTest(ITestResult result, ITestContext context, Method method) throws URISyntaxException, NoSuchMethodException {
 		try {
 			if (context.getAttribute("onRetry") == null) {
 				testName = new ThreadLocal<>();
@@ -167,7 +170,13 @@ public abstract class TestBase {
 							FrameworkProperties.getDeviceName(), FrameworkProperties.getPlatformVersion());
 				} else {
 					PerformanceUtils.startTimer();
-					appiumDriver.get().launchApp();
+                    if (isAndroidExecution()) {
+                        ((AndroidDriver) (appiumDriver.get())).activateApp((FrameworkProperties.getPackage()));
+                    } else {
+                        ((IOSDriver) (appiumDriver.get())).activateApp((FrameworkProperties.getPackage()));
+
+                    }
+
 					PerformanceUtils.addTimeToAverage(PerformanceUtils.stopTimer());
 				}
 			}
@@ -292,11 +301,11 @@ public abstract class TestBase {
 					logResultSauceLabs(result);
 					appiumDriver.get().quit();
 				} else {
-					appiumDriver.get().closeApp();
+                    appiumDriver.get().close();
 				}
 			} else {
 				logResultSauceLabs(result);
-				appiumDriver.get().closeApp();
+                appiumDriver.get().close();
 				appiumDriver.get().quit();
 			}
 		} catch (NullPointerException | NoSuchSessionException e) {

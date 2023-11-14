@@ -1,6 +1,15 @@
 package framework.base;
 
 
+import com.google.common.collect.ImmutableMap;
+import framework.report.Log;
+import framework.test.TestUtils.Browser;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.ios.IOSDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -11,27 +20,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.collect.ImmutableMap;
-
-import framework.base.FrameworkProperties;
-import framework.base.Utils;
-import framework.report.Log;
-import framework.test.TestUtils.Browser;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.ios.IOSDriver;
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.UnexpectedException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The Class WebDriverFacade.
@@ -413,7 +406,7 @@ public class WebDriverFacade {
      *
      * @author carlos.cadena
      * @param locator the locator
-     * @return MobileElement
+     * @return WebElement
      */
 	public static WebElement findElementIfVisible(By locator) {
 		return findElement(locator, pageTimeOut, true);
@@ -424,7 +417,7 @@ public class WebDriverFacade {
 	 *
 	 * @author carlos.cadena
 	 * @param locator the locator
-	 * @return A List of MobileElement (with zero elements if condition was not met)
+     * @return A List of WebElement (with zero elements if condition was not met)
 	 */
 	public static List<WebElement> findElementsAllVisible(By locator) {
 		return findElements(locator, pageTimeOut, true);
@@ -459,7 +452,7 @@ public class WebDriverFacade {
 	 * @param locator the locator
 	 * @param timeOut the time out
 	 * @param visibility the visibility
-	 * @return MobileElement
+     * @return WebElement
 	 */
 	public static WebElement findElement(By locator, int timeOut, boolean visibility) {
 		return Utils.findElement(getDriver(), locator, timeOut, visibility);
@@ -500,7 +493,7 @@ public class WebDriverFacade {
 	 * @param locator the locator
 	 * @param timeOut the time out
 	 * @param visibility the visibility
-	 * @return A List of MobileElement
+     * @return A List of WebElement
 	 */
 	public static List<WebElement> findElements(By locator, int timeOut, boolean visibility) {
 		return Utils.findElements(getDriver(), locator, pageTimeOut, visibility);

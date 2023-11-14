@@ -2,10 +2,10 @@ package framework.page.settings;
 
 import framework.base.AppiumDriverFacade;
 import framework.base.MobileBasePage;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * The Class iOSMainPage.
@@ -18,11 +18,11 @@ public class IOSMainPage extends MobileBasePage {
 
 	/** The plane mode switch. */
 	@iOSXCUITFindBy(iOSNsPredicate = "type == 'XCUIElementTypeSwitch' AND name == 'Modo Avión'")
-	private MobileElement planeModeSwitch;
+	private WebElement planeModeSwitch;
 
 	/** The Wi-Fi option. */
 	@iOSXCUITFindBy(iOSNsPredicate = "type == 'XCUIElementTypeCell' AND name == 'Wi-Fi'")
-	private MobileElement wifiOption;
+	private WebElement wifiOption;
 
 	public IOSMainPage() {
 		super();
@@ -41,7 +41,7 @@ public class IOSMainPage extends MobileBasePage {
 	 */
 	@Override
 	public By setMainLocatorIos() {
-		return MobileBy.iOSNsPredicateString(MAIN_LOCATOR_IOS);
+		return AppiumBy.iOSNsPredicateString(MAIN_LOCATOR_IOS);
 	}
 
 	/**

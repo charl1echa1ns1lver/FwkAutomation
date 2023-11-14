@@ -2,10 +2,10 @@ package framework.page.settings;
 
 import framework.base.AppiumDriverFacade;
 import framework.base.MobileBasePage;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * The Class iOSWifiPage access trow @iOSMainPage by making a tap on the Wi-Fi option.
@@ -18,7 +18,7 @@ public class IOSWifiPage extends MobileBasePage {
 
 	/** The Wi-Fi switch. */
 	@iOSXCUITFindBy(iOSNsPredicate = "type == 'XCUIElementTypeSwitch' AND name == 'Wi-Fi'")
-	private MobileElement wifiSwitch;
+	private WebElement wifiSwitch;
 
 	public IOSWifiPage() {
 		super();
@@ -37,7 +37,7 @@ public class IOSWifiPage extends MobileBasePage {
 	 */
 	@Override
 	public By setMainLocatorIos() {
-		return MobileBy.iOSNsPredicateString(MAIN_LOCATOR_IOS);
+		return AppiumBy.iOSNsPredicateString(MAIN_LOCATOR_IOS);
 	}
 
 	/**

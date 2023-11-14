@@ -1,17 +1,8 @@
 package framework.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import framework.base.FrameworkProperties;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.testng.TestNG;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlSuite;
@@ -21,9 +12,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import framework.base.FrameworkProperties;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The Class AllDevicesExecutor.
@@ -125,7 +122,7 @@ public class AllDevicesExecutor{
 			HashMap<String,String> execParams = new HashMap<String,String>();
 	        List<XmlClass> classes = new ArrayList<XmlClass>();
 	        String id = dev.get("id").replace("_us", " ").replace("_real", " ").replace("_", " ").trim();
-			testXML.setName(item.getAttribute("name") + " : " + (id.contains("cx") ? id.replace("cx", "") + "Caixa Private" : id)
+			testXML.setName(item.getAttribute("name")
 					+ (eu ? " EU" : " US") + " - Model : '" + dev.get("modelNumber") + "' - OS : '"
 					+ dev.get("osVersion") + "'");
 	        classes.add(new XmlClass(((Element)((Element)item.getElementsByTagName("classes").item(0)).getElementsByTagName("class").item(0)).getAttribute("name")));

@@ -1,32 +1,24 @@
 package framework.base;
 
+import com.google.common.base.Function;
+import framework.page.settings.IOSMainPage;
+import framework.page.settings.IOSWifiPage;
+import framework.report.Log;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.support.ui.FluentWait;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.support.ui.FluentWait;
-
-import com.google.common.base.Function;
-
-import framework.page.settings.IOSMainPage;
-import framework.page.settings.IOSWifiPage;
-import framework.report.Log;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.android.nativekey.KeyEvent;
 
 public class WebDriverUtils {
 	
@@ -90,7 +82,7 @@ public class WebDriverUtils {
 	 *
 	 * @author carlos.cadena
 	 */
-	public static <T extends WebElement> void sendCurrentApplicationToTheBackground(AppiumDriver<T> driver) {
+	public static <T extends WebElement> void sendCurrentApplicationToTheBackground(AppiumDriver driver) {
 		driver.runAppInBackground(Duration.ofSeconds(-1));
 	}
 
@@ -101,7 +93,7 @@ public class WebDriverUtils {
 	 * @param appPackage
 	 *            the app package
 	 */
-	public static <T extends WebElement> void activateApplication(AppiumDriver<T> driver, String appPackage) {
+	public static <T extends WebElement> void activateApplication(AppiumDriver driver, String appPackage) {
 		driver.activateApp(appPackage);
 	}
 
@@ -112,19 +104,19 @@ public class WebDriverUtils {
 	 * @param appBundleID
 	 *            the app bundle ID
 	 */
-	public static <T extends WebElement> void terminateApplicationIos(AppiumDriver<T> driver, String appBundleID) {
+	public static <T extends WebElement> void terminateApplicationIos(AppiumDriver driver, String appBundleID) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("bundleId", appBundleID);
 		driver.executeScript("mobile: terminateApp", params);
 	}
 
 	/**
-	 * Terminate caixa application.
+	 * Terminate application.
 	 *
 	 * @author carlos.cadena
 	 */
-	public static <T extends WebElement> void closeApplication(AppiumDriver<T> driver, String appBundleID) {
-		AppiumDriverFacade.appiumDriver.get().closeApp();
+	public static <T extends WebElement> void closeApplication(AppiumDriver driver, String appBundleID) {
+		AppiumDriverFacade.appiumDriver.get().close();
 	}
 	
 	//region Toggle Methods
@@ -133,7 +125,7 @@ public class WebDriverUtils {
 	/**
 	 * Toggle airplane mode.
 	 */
-	public static <T extends WebElement> void toggleAirplaneMode(AppiumDriver<T> driver, boolean isAndroidExecution) {
+	public static <T extends WebElement> void toggleAirplaneMode(AppiumDriver driver, boolean isAndroidExecution) {
 		if (isAndroidExecution) {
 			((AndroidDriver<T>) driver).toggleAirplaneMode();
 		} else {
@@ -152,7 +144,7 @@ public class WebDriverUtils {
 	 * 
 	 * @return
 	 */
-	public static <T extends WebElement> void toogleData(AppiumDriver<T> driver, boolean isAndroidExecution) {
+	public static <T extends WebElement> void toogleData(AppiumDriver driver, boolean isAndroidExecution) {
 		if (isAndroidExecution) {
 			((AndroidDriver<T>) driver).toggleData();
 		}
@@ -162,7 +154,7 @@ public class WebDriverUtils {
 	/**
 	 * Toggle location.
 	 */
-	public static <T extends WebElement> void toggleLocation(AppiumDriver<T> driver, boolean isAndroidExecution) {
+	public static <T extends WebElement> void toggleLocation(AppiumDriver driver, boolean isAndroidExecution) {
 		if (isAndroidExecution) {
 			((AndroidDriver<T>) driver).toggleLocationServices();
 		}
@@ -172,9 +164,9 @@ public class WebDriverUtils {
 	/**
 	 * Toggle wifi.
 	 */
-	public static <T extends WebElement> void toggleWifi(AppiumDriver<T> driver, boolean isAndroidExecution) {
+	public static <T extends WebElement> void toggleWifi(AppiumDriver driver, boolean isAndroidExecution) {
 		if (isAndroidExecution) {
-			((AndroidDriver<T>) driver).toggleWifi();
+			((AndroidDriver) driver).toggleWifi();
 		} else {
 			sendCurrentApplicationToTheBackground(driver);
 			activateApplication(driver, "com.apple.Preferences");
@@ -198,8 +190,8 @@ public class WebDriverUtils {
 	 * @author carlos.cadena
 	 * @param keys the keys
 	 */
-	public static <T extends WebElement> void pressKeyboardKeys(AppiumDriver<T> driver, String keys) {
-		driver.getKeyboard().sendKeys(keys);
+	public static <T extends WebElement> void pressKeyboardKeys(AppiumDriver driver, String keys) {
+		driver.sendKeys(keys);
 	}
 
 	/**
@@ -207,7 +199,7 @@ public class WebDriverUtils {
 	 *
 	 * @author carlos.cadena
 	 */
-	public static <T extends WebElement> void hideKeyboard(AppiumDriver<T> driver) {
+	public static <T extends WebElement> void hideKeyboard(AppiumDriver driver) {
 		driver.hideKeyboard();
 	}
 	
@@ -271,7 +263,7 @@ public class WebDriverUtils {
 	 * @param timeout the timeout
 	 * @return true, if successful
 	 */
-	public static <T extends WebElement> boolean switchToContext(AppiumDriver<T> driver, String contextName, int timeout) {
+	public static <T extends WebElement> boolean switchToContext(AppiumDriver driver, String contextName, int timeout) {
 		try {
 			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(WebDriverException.class)
@@ -292,7 +284,7 @@ public class WebDriverUtils {
 	 * @param timeout the timeout
 	 * @return true, if successful
 	 */
-	public static <T extends WebElement> boolean switchToFirstWebContextFound(AppiumDriver<T> driver, int timeout) {
+	public static <T extends WebElement> boolean switchToFirstWebContextFound(AppiumDriver driver, int timeout) {
 		try {
 			return new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeout))
 					.ignoring(WebDriverException.class).ignoring(java.util.NoSuchElementException.class)

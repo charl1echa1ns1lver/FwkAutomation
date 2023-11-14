@@ -128,7 +128,7 @@ public class TestUtils {
 		} else {
 			RestAssured.baseURI = "https://app.testobject.com/api/rest/v2/devices";
 			Response response = RestAssured.given().auth().preemptive()
-					.basic("guillermomartin", FrameworkProperties.getTestObjectId(FrameworkProperties.getApp())).get();
+					.basic("xxxxxxx", FrameworkProperties.getTestObjectId(FrameworkProperties.getApp())).get();
 			deviceNameSearch = appiumDriver.get().getCapabilities().asMap().get("testobject_device").toString();
 			device = response.getBody().jsonPath().getString((deviceNameSearch.contains("_us") ? "US":"EU") +".find { it.id == '" + deviceNameSearch + "' }.name");
 			if(device == null) {
@@ -152,11 +152,11 @@ public class TestUtils {
 			Asserts.fail("Failing test as element with index '" + index + "' is not present");
 		}
 	}
-	
+
 	/**
-	 * Return a {@link List} of {@link LocalDate} with the dates ordered providing a 
-	 * a {@link List} of{@link String} of dates as obtained from Caixa app (e.g Hoy, Ayer, Martes, 16 May, 15 Oct)
-	 * 
+	 * Return a {@link List} of {@link LocalDate} with the dates ordered providing a
+	 * a {@link List} of{@link String} of dates as obtained from format like (e.g Hoy, Ayer, Martes, 16 May, 15 Oct)
+	 *
 	 * @author carlos.cadena
 	 * @param dates the dates
 	 * @return the list
@@ -165,12 +165,10 @@ public class TestUtils {
 		return asDates(Arrays.asList(dates));
 	}
 
-	
-		
 
 	/**
 	 * Return a {@link List} of {@link LocalDate} with the dates ordered providing a 
-	 * a {@link List} of{@link String} of dates as obtained from Caixa app (e.g Hoy, Ayer, Martes, 16 May, 15 Oct)
+	 * a {@link List} of{@link String} of dates as obtained from format like (e.g Hoy, Ayer, Martes, 16 May, 15 Oct)
 	 * 
 	 * @author carlos.cadena
 	 * @param dates the dates

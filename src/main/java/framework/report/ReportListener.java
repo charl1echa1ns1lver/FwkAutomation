@@ -303,8 +303,6 @@ public class ReportListener implements ITestListener, ISuiteListener{
         Paragraph subTitle = new Paragraph("Configuracion:",subTitleFont);
         Paragraph subTitle2 = new Paragraph("Resultados:",subTitleFont);
         // Fill the document with the tests results
-        Image img = Image.getInstance("src/test/resources/images/logo-caixabank.jpg");
-        document.add(img);
         document.add(title);
         document.add(new Paragraph("\n"));
         document.add(subTitle);
